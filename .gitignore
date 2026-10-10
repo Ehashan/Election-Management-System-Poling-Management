@@ -1,0 +1,18 @@
+# Secrets & Environments
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Django
+db.sqlite3
+*.log
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/

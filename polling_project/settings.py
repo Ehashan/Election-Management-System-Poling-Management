@@ -10,17 +10,20 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / '.env')
 
 
 
-SECRET_KEY = "django-insecure-g8d8r21y)gcp5h6unmp846(k_4pp^!ol@6x1gej(y@e*0@6_!%"
+SECRET_KEY = os.getenv('SECRET_KEY', 'default-insecure-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 't')
 
 ALLOWED_HOSTS = []
 
@@ -121,8 +124,8 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # MongoDB Configuration
-MONGO_URI = "mongodb+srv://erandahashan0103_db_user:XvPVJzOOnHeGlett@cluster0.qvocwa6.mongodb.net/?appName=Cluster0"
-MONGO_DB_NAME = "Election_Management_System"
+MONGO_URI = os.getenv('MONGO_URI')
+MONGO_DB_NAME = os.getenv('MONGO_DB_NAME')
 
 LOGIN_URL = '/polling/login/'
 
