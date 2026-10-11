@@ -178,9 +178,7 @@ def verify_face(request):
                 qr_token = str(uuid.uuid4())
                 # Save to MongoDB qr_codes collection
                 db.qr_codes.insert_one({
-                    'nic': nic,
                     'qr_token': qr_token,
-                    'created_at': datetime.now(),
                     'used': False
                 })
 
