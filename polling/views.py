@@ -6,6 +6,8 @@ from django.http import JsonResponse
 from .db_utils import get_db
 import base64
 import json
+import uuid
+import io
 from datetime import datetime
 import cv2
 import numpy as np
@@ -169,10 +171,43 @@ def verify_face(request):
                 'confidence': confidence,
                 'poll_worker': request.user.username
             })
+
+            qr_token = None
+            qr_image_b64 = None
+            if best_match:
+                qr_token = str(uuid.uuid4())
+                # Save to MongoDB qr_codes collection
+                db.qr_codes.insert_one({
+                    'nic': nic,
+                    'qr_token': qr_token,
+                    'created_at': datetime.now(),
+                    'used': False
+                })
+
+                # Generate QR code image as base64
+                try:
+                    import qrcode
+                    qr = qrcode.QRCode(
+                        version=1,
+                        error_correction=qrcode.constants.ERROR_CORRECT_M,
+                        box_size=6,
+                        border=2
+                    )
+                    qr_payload = qr_token
+                    qr.add_data(qr_payload)
+                    qr.make(fit=True)
+                    qr_img = qr.make_image(fill_color="black", back_color="white")
+                    buf = io.BytesIO()
+                    qr_img.save(buf, format="PNG")
+                    qr_image_b64 = "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode('utf-8')
+                except Exception as qr_err:
+                    print(f"QR image generation notice: {qr_err}")
             
             return JsonResponse({
                 'verified': best_match,
                 'confidence': confidence,
+                'qr_token': qr_token,
+                'qr_image': qr_image_b64,
                 'message': 'Face verified successfully!' if best_match else 'Face does not match registered photo.'
             })
             

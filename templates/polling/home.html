@@ -150,6 +150,7 @@
             }
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 
 <body>
@@ -387,7 +388,29 @@
                         <div class="confidence-score">Confidence: ${data.confidence}%</div>
                         <p style="margin-top: 20px;">${currentVoter.name} is authorized to vote</p>
                     </div>
+
+                    <div id="qr-container" style="text-align: center; margin-top: 30px; padding: 25px; background: #ffffff; border: 2px solid #e0e0e0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
+                        <h3 style="color: #333; margin-bottom: 6px;">🗳️ Voter Pass</h3>
+                        <p style="color: #666; font-size: 14px; margin-bottom: 15px;">Token: <code style="background: #f1f1f1; padding: 2px 6px; border-radius: 4px;">${data.qr_token || 'N/A'}</code></p>
+                        
+                        <div id="qrcode" style="display: flex; justify-content: center; align-items: center; margin: 15px auto; min-height: 160px;">
+                            ${data.qr_image ? `<img id="qr-img-tag" src="${data.qr_image}" alt="Voter QR Pass" style="width: 160px; height: 160px; border-radius: 8px; border: 1px solid #ddd; padding: 4px; background: #fff;" />` : ''}
+                        </div>
+
+                        <button type="button" class="btn btn-secondary" onclick="printQR()" style="margin-top: 15px; padding: 10px 24px; font-size: 16px; cursor: pointer;">
+                            🖨️ Print QR Pass
+                        </button>
+                    </div>
                 `;
+
+                // If server didn't supply an image or client wants canvas rendering, generate with QRCode.js
+                if (!data.qr_image && data.qr_token && typeof QRCode !== 'undefined') {
+                    new QRCode(document.getElementById("qrcode"), {
+                        text: data.qr_token,
+                        width: 160,
+                        height: 160
+                    });
+                }
             } else {
                 const message = data.message || data.error || 'Face does not match registered photo.';
                 resultDiv.innerHTML = `
@@ -400,12 +423,71 @@
             }
         }
 
+        function printQR() {
+            let qrImageSrc = '';
+            const serverImg = document.getElementById('qr-img-tag');
+            if (serverImg && serverImg.src) {
+                qrImageSrc = serverImg.src;
+            } else {
+                const qrCanvas = document.querySelector('#qrcode canvas');
+                if (qrCanvas) {
+                    qrImageSrc = qrCanvas.toDataURL('image/png');
+                } else {
+                    const img = document.querySelector('#qrcode img');
+                    if (img) {
+                        qrImageSrc = img.src;
+                    }
+                }
+            }
+
+            const printWindow = window.open('', '', 'height=650,width=800');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Voter Pass - ${currentVoter.nic}</title>
+                        <style>
+                            @page {
+                                size: auto;
+                                margin: 10mm;
+                            }
+                            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; text-align: center; padding: 20px; background: #fff; }
+                            .pass { border: 2px dashed #ff007f; padding: 30px; display: inline-block; border-radius: 12px; max-width: 420px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+                            h2 { margin-top: 0; margin-bottom: 15px; color: #ff007f; }
+                            .qr-holder { margin: 20px 0; }
+                            .qr-holder img { width: 180px; height: 180px; }
+                            .info-row { text-align: left; margin: 8px 0; font-size: 16px; color: #333; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="pass">
+                            <h2>🗳️ Official Voter Pass</h2>
+                            <div class="qr-holder">
+                                <img src="${qrImageSrc}" alt="QR Pass" />
+                            </div>
+                            <div class="info-row"><strong>NIC:</strong> ${currentVoter.nic}</div>
+                            <div class="info-row"><strong>Name:</strong> ${currentVoter.name}</div>
+                            <div class="info-row"><strong>Polling Division:</strong> ${currentVoter.polling_division || 'N/A'}</div>
+                            <div class="info-row"><strong>Verified At:</strong> ${new Date().toLocaleString()}</div>
+                        </div>
+                        <script>
+                            window.onload = function() {
+                                window.print();
+                                setTimeout(() => window.close(), 500);
+                            };
+                        <\/script>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
         function resetVerification() {
             document.getElementById('nic-input').value = '';
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('step3').classList.add('hidden');
             document.getElementById('step4').classList.add('hidden');
             document.getElementById('search-error').classList.add('hidden');
+            document.getElementById('verification-result').innerHTML = '';
             currentVoter = null;
         }
 

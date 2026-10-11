@@ -10,3 +10,5 @@ numpy
 scikit-learn
 onnxruntime
 python-dotenv
+qrcode
+pillow
