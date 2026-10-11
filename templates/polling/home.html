@@ -444,18 +444,41 @@
             printWindow.document.write(`
                 <html>
                     <head>
-                        <title>Voter Pass - ${currentVoter.nic}</title>
+                        <title></title>
                         <style>
                             @page {
-                                size: auto;
-                                margin: 10mm;
+                                margin: 0;
                             }
-                            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; text-align: center; padding: 20px; background: #fff; }
-                            .pass { border: 2px dashed #ff007f; padding: 30px; display: inline-block; border-radius: 12px; max-width: 420px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-                            h2 { margin-top: 0; margin-bottom: 15px; color: #ff007f; }
-                            .qr-holder { margin: 20px 0; }
-                            .qr-holder img { width: 180px; height: 180px; }
-                            .info-row { text-align: left; margin: 8px 0; font-size: 16px; color: #333; }
+                            body {
+                                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                                text-align: center;
+                                padding: 50px 20px;
+                                margin: 0;
+                                background: #fff;
+                            }
+                            .pass {
+                                border: 2px dashed #ff007f;
+                                padding: 30px;
+                                display: inline-block;
+                                border-radius: 14px;
+                                max-width: 360px;
+                                box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+                            }
+                            h2 {
+                                margin-top: 0;
+                                margin-bottom: 20px;
+                                color: #ff007f;
+                                font-size: 24px;
+                            }
+                            .qr-holder {
+                                margin: 0;
+                            }
+                            .qr-holder img {
+                                width: 220px;
+                                height: 220px;
+                                display: block;
+                                margin: 0 auto;
+                            }
                         </style>
                     </head>
                     <body>
@@ -464,10 +487,6 @@
                             <div class="qr-holder">
                                 <img src="${qrImageSrc}" alt="QR Pass" />
                             </div>
-                            <div class="info-row"><strong>NIC:</strong> ${currentVoter.nic}</div>
-                            <div class="info-row"><strong>Name:</strong> ${currentVoter.name}</div>
-                            <div class="info-row"><strong>Polling Division:</strong> ${currentVoter.polling_division || 'N/A'}</div>
-                            <div class="info-row"><strong>Verified At:</strong> ${new Date().toLocaleString()}</div>
                         </div>
                         <script>
                             window.onload = function() {
