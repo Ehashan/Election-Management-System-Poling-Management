@@ -3,6 +3,13 @@ from django.conf import settings
 import pymongo
 from datetime import datetime
 
+try:
+    import dns.resolver
+    dns.resolver.default_resolver = dns.resolver.Resolver(configure=False)
+    dns.resolver.default_resolver.nameservers = ['8.8.8.8', '8.8.4.4', '1.1.1.1']
+except Exception:
+    pass
+
 # Connect to MongoDB
 client = pymongo.MongoClient(settings.MONGO_URI)
 db = client[settings.MONGO_DB_NAME]
