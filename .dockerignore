@@ -1,0 +1,34 @@
+# Virtual environments (including nested ones like polling_project/.venv)
+**/.venv
+**/.venv/**
+**/venv
+**/venv/**
+**/env
+**/env/**
+polling_project/.venv/
+.venv/
+venv/
+env/
+
+# Git and IDE
+**/.git
+**/.git/**
+**/.vscode
+**/.vscode/**
+**/.idea
+**/.idea/**
+.gitignore
+
+# Python cache and byte-compiled files
+**/__pycache__
+**/__pycache__/**
+**/*.pyc
+**/*.pyo
+**/*.pyd
+
+# Testing and coverage
+**/.pytest_cache
+**/.pytest_cache/**
+**/.coverage
+**/htmlcov
+**/htmlcov/**

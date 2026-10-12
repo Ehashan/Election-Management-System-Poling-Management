@@ -194,7 +194,7 @@ def verify_face(request):
                     qr_payload = qr_token
                     qr.add_data(qr_payload)
                     qr.make(fit=True)
-                    qr_img = qr.make_image(fill_color="black", back_color="white")
+                    qr_img = qr.make_image(fill_color="#ff007f", back_color="white")
                     buf = io.BytesIO()
                     qr_img.save(buf, format="PNG")
                     qr_image_b64 = "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode('utf-8')
